@@ -1,0 +1,22 @@
+spring:
+  config:
+    import: classpath:config/.dev-config.yml
+
+  flyway:
+    enabled: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1/
+  error:
+    include-message: always

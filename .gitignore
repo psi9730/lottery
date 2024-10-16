@@ -1,0 +1,56 @@
+
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+.idea/
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+### Intellij Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+
+# *.iml
+# modules.xml
+
+.gradle/
+build/
+
+**/*firebase-adminsdk*.json
+**/*gcp-key*.json
+**/.idea/httpRequests
+**/.idea_*
+**/jwtSecretFile
+**/.idea/shelf
+**/*.out
+**/*.class
+**/*.kotlin_module
+
+**/out
+**/build
+**/java_pid*.hprof
+**/application-temp.yaml
+exported/
+
+**/.DS_Store
+rapportlabs-kubernetes/
+.chartmuseum/
+
+src/main/resources/config/
