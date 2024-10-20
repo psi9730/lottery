@@ -2,17 +2,16 @@ spring:
   config:
     import: classpath:config/.dev-config.yml
 
-  flyway:
-    enabled: true
-
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
         show_sql: true
         format_sql: true
+        type: trace
+        highlight_sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
 server:
   port: 8080
@@ -20,3 +19,7 @@ server:
     context-path: /api/v1/
   error:
     include-message: always
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
