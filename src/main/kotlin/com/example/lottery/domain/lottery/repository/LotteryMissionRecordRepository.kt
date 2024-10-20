@@ -21,6 +21,19 @@ interface LotteryMissionRecordRepository : JpaRepository<LotteryMissionRecord, L
         AND lmr.completedAt BETWEEN :startMillis AND :endMillis
     """
     )
+    fun findCompletedLotteryMissionRecordByStartAndEndAtMillisPessimistic(missionId: Long, uid: String, startMillis: Long, endMillis: Long): List<LotteryMissionRecord>
+
+    @Query(
+        """
+    SELECT lmr 
+    FROM LotteryMissionRecord lmr
+    WHERE 
+        lmr.mission.id = :missionId 
+        AND lmr.user.id = :uid 
+        AND lmr.status = 1
+        AND lmr.completedAt BETWEEN :startMillis AND :endMillis
+    """
+    )
     fun findCompletedLotteryMissionRecordByStartAndEndAtMillis(missionId: Long, uid: String, startMillis: Long, endMillis: Long): List<LotteryMissionRecord>
 
     @Query("""

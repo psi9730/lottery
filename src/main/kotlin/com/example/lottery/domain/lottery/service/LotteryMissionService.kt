@@ -111,7 +111,7 @@ class LotteryMissionService(
             val user = userService.findUserOrThrow(dto.uid)
 
             val todayCompleteLotteryMissions: List<LotteryMissionRecord> =
-                lotteryMissionRecordRepository.findCompletedLotteryMissionRecordByStartAndEndAtMillis(
+                lotteryMissionRecordRepository.findCompletedLotteryMissionRecordByStartAndEndAtMillisPessimistic(
                     missionId = dto.missionId,
                     uid = dto.uid,
                     startMillis = today.start,
