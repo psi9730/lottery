@@ -1,8 +1,8 @@
 package com.example.lottery.domain.lottery.entity
 
-import com.example.lottery.domain.lottery.dto.LotteryMissionCoinCreateDto
 import com.example.lottery.domain.user.entity.User
 import jakarta.persistence.*
+import kotlin.random.Random
 
 @Entity
 @Table(name = "lottery_mission_coins")
@@ -27,19 +27,21 @@ class LotteryMissionCoin (
     }
 
     companion object {
-        fun plusCoin(dto: LotteryMissionCoinCreateDto): LotteryMissionCoin {
+        fun plusCoinWithRandom(user: User, maxAmount: Long, minAmount: Long = 1): LotteryMissionCoin {
+            val randomAmount = Random.nextLong(minAmount, maxAmount + 1)
+
             return LotteryMissionCoin(
-                user = dto.user,
                 amountType = AmountType.PLUS,
-                amount = dto.amount,
+                user = user,
+                amount = randomAmount,
             )
         }
 
-        fun minusCoin(dto: LotteryMissionCoinCreateDto): LotteryMissionCoin {
+        fun minusCoin(user: User, amount: Long): LotteryMissionCoin {
             return LotteryMissionCoin(
-                user = dto.user,
                 amountType = AmountType.PLUS,
-                amount = dto.amount,
+                user = user,
+                amount = amount,
             )
         }
     }

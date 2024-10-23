@@ -7,8 +7,8 @@ import java.time.temporal.ChronoUnit
 
 
 data class StartAndEnd(
-    val start: Long,
-    val end: Long
+    val start: Instant,
+    val end: Instant
 )
 
 class DateTimeUtil {
@@ -17,16 +17,15 @@ class DateTimeUtil {
 
         fun getTodayStartAndEndAt(): StartAndEnd {
             val zoneId = ZoneId.of(timezone)
+            val today: LocalDate = LocalDate.now()
 
-            val today: LocalDate = LocalDate.now(zoneId)
+            val startOfToday: ZonedDateTime = today.atStartOfDay(zoneId)
+            val startInstant: Instant = startOfToday.toInstant()
 
-            val startOfDay: LocalDateTime = today.atStartOfDay()
-            val startOfDayInstant: Instant = startOfDay.atZone(zoneId).toInstant()
+            val endOfToday: ZonedDateTime = today.plusDays(1).atStartOfDay(zoneId).minusNanos(1)
+            val endInstant: Instant = endOfToday.toInstant()
 
-            val endOfDay: LocalDateTime = today.atTime(23, 59, 59, 999_999_999)
-            val endOfDayInstant: Instant = endOfDay.atZone(zoneId).toInstant()
-
-            return StartAndEnd(startOfDayInstant.toEpochMilli(), endOfDayInstant.toEpochMilli())
+            return StartAndEnd(startInstant, endInstant)
         }
 
         fun isOver24HoursFromUtcString(startAt: String): Boolean {
@@ -37,9 +36,8 @@ class DateTimeUtil {
                 val startInstant = zonedDateTime.toInstant()
                 val currentInstant = Instant.now()
 
-                ChronoUnit.HOURS.between(startInstant, currentInstant) > 24
+                return ChronoUnit.HOURS.between(startInstant, currentInstant) > 24
             } catch (e: DateTimeParseException) {
-                println("Hello")
                 false
             }
         }

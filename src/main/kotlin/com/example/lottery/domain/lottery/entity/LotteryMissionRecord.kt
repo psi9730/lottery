@@ -4,6 +4,7 @@ import com.example.lottery.domain.user.entity.User
 import com.example.lottery.util.error.BusinessValidationException
 import com.example.lottery.util.function.DateTimeUtil
 import jakarta.persistence.*
+import java.time.Duration
 import java.time.Instant
 
 @Entity
@@ -21,63 +22,69 @@ class LotteryMissionRecord (
     @JoinColumn(name = "lottery_mission_id", nullable = false)
     val mission: LotteryMission,
 
-    @Column
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var status: Status,
 
-    @Column
-    val createdAt: Long = Instant.now().toEpochMilli(),
+    @Column(nullable = false)
+    val createdAt: Instant = Instant.now(),
 
     @Column
-    var completedAt: Long?
+    var completedAt: Instant?,
 ) {
     enum class Status {
         COMPLETE_WAITING,
         COMPLETED,
     }
 
-    companion object {
-        private const val expirationTime = 20000
+    private fun checkExpiration() {
+        val currentTime = Instant.now()
 
-        fun updateWaitingMissionToCompleted(mission: LotteryMissionRecord): LotteryMissionRecord {
-            val currentTime = Instant.now().toEpochMilli()
+        val timeElapsed = Duration.between(this.createdAt, currentTime)
 
-            if (currentTime - mission.createdAt <= expirationTime) {
-                mission.status = Status.COMPLETED
-                mission.completedAt = currentTime
-                return mission
-            } else {
-                throw BusinessValidationException("Mission record has expired and cannot be completed.")
-            }
+        if (timeElapsed > expirationTime) {
+            throw BusinessValidationException("Mission record has expired and cannot be completed.")
         }
+    }
+
+    fun updateWaitingMissionToCompleted() {
+        checkExpiration()
+
+        this.status = Status.COMPLETED
+        this.completedAt = Instant.now()
+    }
+
+    companion object {
+        private val expirationTime = Duration.ofDays(1)
 
         fun createCompleteWaitingMissionRecord(user: User, mission: LotteryMission, startAt: String): LotteryMissionRecord {
+            if (!mission.type.isCompleteWaitingRequired()) {
+                throw BusinessValidationException("${mission.type} is not allowed")
+            }
+
             if (DateTimeUtil.isOver24HoursFromUtcString(startAt)) {
                 throw BusinessValidationException("startAt is over 24 hours")
             }
 
-            if (LotteryMission.isCompleteWaitingRequiredType(mission.type)) {
-                return LotteryMissionRecord(
-                    user = user,
-                    mission = mission,
-                    status = Status.COMPLETE_WAITING,
-                    completedAt = null,
-                )
-            } else {
-                throw BusinessValidationException("${mission.type} is not allowed")
-            }
+            return LotteryMissionRecord(
+                user = user,
+                mission = mission,
+                status = Status.COMPLETE_WAITING,
+                completedAt = null,
+            )
         }
 
         fun createCompletedMissionRecord(user: User, mission: LotteryMission): LotteryMissionRecord {
-            if (!LotteryMission.isCompleteWaitingRequiredType(mission.type)) {
-                return LotteryMissionRecord(
-                    user = user,
-                    mission = mission,
-                    status = Status.COMPLETED,
-                    completedAt = Instant.now().toEpochMilli(),
-                )
-            } else {
+            if (mission.type.isCompleteWaitingRequired()) {
                 throw BusinessValidationException("${mission.type} can't complete directly")
             }
+
+            return LotteryMissionRecord(
+                user = user,
+                mission = mission,
+                status = Status.COMPLETED,
+                completedAt = Instant.now(),
+            )
         }
     }
 }

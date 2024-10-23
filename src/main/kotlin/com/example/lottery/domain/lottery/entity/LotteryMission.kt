@@ -1,15 +1,16 @@
 package com.example.lottery.domain.lottery.entity
 
-import com.example.lottery.domain.lottery.dto.LotteryMissionCreateDto
+import com.example.lottery.util.error.BusinessValidationException
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "lottery_missions")
-class LotteryMission private constructor(
+class LotteryMission(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     val type: MissionType,
 
@@ -23,20 +24,15 @@ class LotteryMission private constructor(
         KAKAO_SHARE,
         ATTENDANCE,
         VISIT_COUPANG,
-        WATCH_AD
+        WATCH_AD;
+        fun isCompleteWaitingRequired(): Boolean {
+            return this == KAKAO_SHARE || this == WATCH_AD
+        }
     }
 
-    companion object {
-        fun isCompleteWaitingRequiredType (type: MissionType): Boolean {
-            return type == MissionType.KAKAO_SHARE || type == MissionType.WATCH_AD
-        }
-
-        fun fromDto(dto: LotteryMissionCreateDto): LotteryMission {
-            return LotteryMission(
-                type = dto.type,
-                maxRewardAmount = dto.maxRewardAmount,
-                maxDailyCount = dto.maxDailyCount,
-            )
+    fun validateDailyCompletionLimit (completedMissionSize: Int) {
+        if (completedMissionSize >= this.maxDailyCount) {
+            throw BusinessValidationException("today complete lottery limit over")
         }
     }
 }
