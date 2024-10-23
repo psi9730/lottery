@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService(private val userRepository: UserRepository) {
-    fun saveUser(user: CreateUserDto): User {
+    fun saveUser(dto: CreateUserDto): User {
         try {
-            return userRepository.save(User.fromDto(user))
+            return userRepository.save(User.of(user_name = dto.user_name,email=dto.email, phoneNumber=dto.phoneNumber))
         } catch (ex: DataIntegrityViolationException) {
-            throw UserAlreadyExistsException("User with this phoneNumber already exists: ${user.phoneNumber}")
+            throw UserAlreadyExistsException("User with this phoneNumber already exists: ${dto.phoneNumber}")
         }
     }
 

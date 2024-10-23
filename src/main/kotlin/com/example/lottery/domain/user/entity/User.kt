@@ -1,12 +1,11 @@
 package com.example.lottery.domain.user.entity
 
-import com.example.lottery.domain.user.dto.CreateUserDto
 import com.example.lottery.util.function.generateId
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "users")
-class User private constructor(
+class User (
     @Id
     val id: String,
 
@@ -20,12 +19,12 @@ class User private constructor(
     val phoneNumber: String,
 ) {
     companion object {
-        fun fromDto(dto: CreateUserDto): User {
+        fun of(user_name: String, email: String, phoneNumber: String): User {
             return User(
                 id = generateId("UID"),
-                user_name = dto.user_name,
-                email = dto.email,
-                phoneNumber = dto.phoneNumber
+                user_name = user_name,
+                email = email,
+                phoneNumber = phoneNumber
             )
         }
     }
