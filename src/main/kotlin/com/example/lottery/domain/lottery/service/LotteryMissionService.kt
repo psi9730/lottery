@@ -33,10 +33,10 @@ class LotteryMissionService(
     }
 
     @Transactional(readOnly = true)
-    fun getLotteryUser(uid: String): LotteryUserDto {
+    fun getLotteryUser(uid: String): LotteryUser {
         val user = userService.findUserOrThrow(uid)
 
-        return LotteryUserDto(uid, lotteryMissionCoinRepository.sumUserCoins(user.id) ?: 0)
+        return LotteryUser(uid, lotteryMissionCoinRepository.sumUserCoins(user.id) ?: 0)
     }
 
     private fun findTodayCompletedRecords(uid: String): List<LotteryMissionRecord> {
@@ -50,14 +50,14 @@ class LotteryMissionService(
     }
 
     @Transactional(readOnly = true)
-    fun getLotteryMissionOfUser(uid: String): List<LotteryMissionDto> {
+    fun getLotteryMissionOfUser(uid: String): List<LotteryMissionWithRemainingDailyCount> {
         userService.findUserOrThrow(uid)
 
         val missions = lotteryMissionRepository.findAll()
         val completedRecordsGrouped = findTodayCompletedRecords(uid).groupBy { it.mission.id }
 
         return missions.map { mission ->
-            LotteryMissionDto(
+            LotteryMissionWithRemainingDailyCount(
                 id = mission.id,
                 type = mission.type,
                 maxRewardAmount = mission.maxRewardAmount,
@@ -97,30 +97,30 @@ class LotteryMissionService(
     }
 
     @Transactional
-    fun completeLotteryMission(dto: CompleteLotteryMissionRequestDto): CompleteLotteryMissionResponseDto {
+    fun completeLotteryMission(missionId: Long, uid: String): CompleteLotteryMissionDto {
         try {
-            val mission = lotteryMissionRepository.findByIdOrNull(dto.missionId)
+            val mission = lotteryMissionRepository.findByIdOrNull(missionId)
                 ?: throw ResourceNotFoundException("lottery mission is not found")
 
-            val user = userService.findUserOrThrow(dto.uid)
+            val user = userService.findUserOrThrow(uid)
 
             val today = DateTimeUtil.getTodayStartAndEndAt()
 
             mission.validateDailyCompletionLimit(
                 lotteryMissionRecordRepository.countCompletedMissionsByDateRange(
-                    missionId = dto.missionId,
-                    uid = dto.uid,
+                    missionId = missionId,
+                    uid = uid,
                     startAt = today.start,
                     endAt = today.end,
                 )
             )
 
-            return CompleteLotteryMissionResponseDto(
+            return CompleteLotteryMissionDto(
                 isSuccess = true,
                 rewardedAmount = completeMissionWithReward(user, mission),
             )
         } catch (e: Exception) {
-            return CompleteLotteryMissionResponseDto(
+            return CompleteLotteryMissionDto(
                 isSuccess = false,
                 rewardedAmount = 0,
                 failedReason = e.message,
@@ -129,7 +129,7 @@ class LotteryMissionService(
     }
 
     @Transactional
-    fun createCompleteWaitingLotteryMissionRecord(dto: LotteryMissionCallbackDto) {
+    fun createCompleteWaitingLotteryMissionRecord(dto: CreateCompleteWaitingLotteryMissionDto) {
         val mission = lotteryMissionRepository.findByIdOrNull(dto.missionId)
             ?: throw ResourceNotFoundException("lottery mission is not found")
 

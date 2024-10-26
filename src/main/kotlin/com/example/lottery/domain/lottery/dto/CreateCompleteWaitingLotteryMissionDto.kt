@@ -1,6 +1,6 @@
 package com.example.lottery.domain.lottery.dto
 
-data class LotteryMissionCallbackDto (
+class CreateCompleteWaitingLotteryMissionDto (
     val uid: String,
     val missionId: Long,
     val startAt: String,
