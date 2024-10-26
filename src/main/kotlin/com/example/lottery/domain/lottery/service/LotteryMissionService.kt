@@ -11,9 +11,12 @@ import com.example.lottery.domain.user.entity.User
 import com.example.lottery.domain.user.service.UserService
 import com.example.lottery.util.error.ResourceNotFoundException
 import com.example.lottery.util.function.DateTimeUtil
+import com.example.lottery.util.lock.redis.RedissonLockService
+import com.example.lottery.util.lock.redis.dto.LockDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 
 @Service
 class LotteryMissionService(
@@ -21,7 +24,10 @@ class LotteryMissionService(
     private val lotteryMissionRecordRepository: LotteryMissionRecordRepository,
     private val lotteryMissionCoinRepository: LotteryMissionCoinRepository,
     private val userService: UserService,
+    private val redissonLockService: RedissonLockService,
+    private val transactionTemplate: TransactionTemplate,
 ) {
+
     fun saveLotteryMission(dto: LotteryMissionCreateDto): LotteryMission {
         return lotteryMissionRepository.save(
             LotteryMission(
@@ -96,7 +102,6 @@ class LotteryMissionService(
         ).amount
     }
 
-    @Transactional
     fun completeLotteryMission(missionId: Long, uid: String): CompleteLotteryMissionDto {
         try {
             val mission = lotteryMissionRepository.findByIdOrNull(missionId)
@@ -104,21 +109,38 @@ class LotteryMissionService(
 
             val user = userService.findUserOrThrow(uid)
 
-            val today = DateTimeUtil.getTodayStartAndEndAt()
-
-            mission.validateDailyCompletionLimit(
-                lotteryMissionRecordRepository.countCompletedMissionsByDateRange(
-                    missionId = missionId,
-                    uid = uid,
-                    startAt = today.start,
-                    endAt = today.end,
-                )
+            val lockKey = "lottery-mission-lock:${mission.id}:$uid"
+            val lockParams = LockDto(
+                key = lockKey,
             )
+            var result = CompleteLotteryMissionDto(isSuccess = false, rewardedAmount = 0)
 
-            return CompleteLotteryMissionDto(
-                isSuccess = true,
-                rewardedAmount = completeMissionWithReward(user, mission),
-            )
+            redissonLockService.executeWithLock(lockParams) {
+                transactionTemplate.execute { status ->
+                    try {
+                        val today = DateTimeUtil.getTodayStartAndEndAt()
+
+                        mission.validateDailyCompletionLimit(
+                            lotteryMissionRecordRepository.countCompletedMissionsByDateRange(
+                                missionId = missionId,
+                                uid = uid,
+                                startAt = today.start,
+                                endAt = today.end,
+                            )
+                        )
+
+                        result = CompleteLotteryMissionDto(
+                            isSuccess = true,
+                            rewardedAmount = completeMissionWithReward(user, mission),
+                        )
+                    } catch (ex: Exception) {
+                        status.setRollbackOnly()
+                        throw ex
+                    }
+                }
+            }
+
+            return result
         } catch (e: Exception) {
             return CompleteLotteryMissionDto(
                 isSuccess = false,

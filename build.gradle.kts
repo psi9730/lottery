@@ -21,11 +21,13 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("mysql:mysql-connector-java:8.0.33")
+	implementation("org.redisson:redisson-spring-boot-starter:3.29.0")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 	runtimeOnly("org.flywaydb:flyway-mysql")
 }
 
