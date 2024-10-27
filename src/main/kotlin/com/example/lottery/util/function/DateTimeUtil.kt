@@ -14,9 +14,21 @@ data class StartAndEnd(
 class DateTimeUtil {
     companion object {
         private const val timezone = "Asia/Seoul"
+        private val zoneId = ZoneId.of(timezone)
+
+        fun convertToLocalDate (instant: Instant): LocalDate =
+            instant.atZone(zoneId).toLocalDate()
+
+        fun convertToInstant(dateString: String): Instant {
+            val localDate = LocalDate.parse(dateString)
+
+            val zonedDateTime = localDate.atStartOfDay(zoneId)
+
+            return zonedDateTime.toInstant()
+        }
+
 
         fun getTodayStartAndEndAt(): StartAndEnd {
-            val zoneId = ZoneId.of(timezone)
             val today: LocalDate = LocalDate.now()
 
             val startOfToday: ZonedDateTime = today.atStartOfDay(zoneId)
