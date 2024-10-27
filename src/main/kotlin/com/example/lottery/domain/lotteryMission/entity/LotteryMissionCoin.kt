@@ -1,4 +1,4 @@
-package com.example.lottery.domain.lottery.entity
+package com.example.lottery.domain.lotteryMission.entity
 
 import com.example.lottery.domain.user.entity.User
 import jakarta.persistence.*
@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 @Entity
 @Table(name = "lottery_mission_coins")
-class LotteryMissionCoin (
+class LotteryMissionCoin private constructor (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -37,12 +37,11 @@ class LotteryMissionCoin (
             )
         }
 
-        fun minusCoin(user: User, amount: Long): LotteryMissionCoin {
-            return LotteryMissionCoin(
+        fun minusCoin(user: User, amount: Long) =
+            LotteryMissionCoin(
                 amountType = AmountType.PLUS,
                 user = user,
                 amount = amount,
             )
-        }
     }
 }

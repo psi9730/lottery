@@ -1,8 +1,8 @@
-package com.example.lottery.domain.lottery.controller
+package com.example.lottery.domain.lotteryMission.controller
 
-import com.example.lottery.domain.lottery.controller.dto.LotteryMissionCallbackDto
-import com.example.lottery.domain.lottery.dto.CreateCompleteWaitingLotteryMissionDto
-import com.example.lottery.domain.lottery.service.LotteryMissionService
+import com.example.lottery.domain.lotteryMission.controller.dto.LotteryMissionCallbackDto
+import com.example.lottery.domain.lotteryMission.dto.CreateCompleteWaitingLotteryMissionDto
+import com.example.lottery.domain.lotteryMission.service.LotteryMissionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

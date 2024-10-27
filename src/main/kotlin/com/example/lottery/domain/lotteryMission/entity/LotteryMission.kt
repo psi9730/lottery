@@ -1,11 +1,11 @@
-package com.example.lottery.domain.lottery.entity
+package com.example.lottery.domain.lotteryMission.entity
 
 import com.example.lottery.util.error.BusinessValidationException
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "lottery_missions")
-class LotteryMission(
+class LotteryMission (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

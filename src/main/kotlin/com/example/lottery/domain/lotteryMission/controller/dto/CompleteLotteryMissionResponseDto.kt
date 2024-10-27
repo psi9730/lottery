@@ -1,6 +1,6 @@
-package com.example.lottery.domain.lottery.controller.dto
+package com.example.lottery.domain.lotteryMission.controller.dto
 
-import com.example.lottery.domain.lottery.dto.CompleteLotteryMissionDto
+import com.example.lottery.domain.lotteryMission.dto.CompleteLotteryMissionDto
 
 data class CompleteLotteryMissionResponseDto(
     val isSuccess: Boolean,

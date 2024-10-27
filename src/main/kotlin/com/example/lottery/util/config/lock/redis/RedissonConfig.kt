@@ -1,4 +1,4 @@
-package com.example.lottery.util.lock.redis
+package com.example.lottery.util.config.lock.redis
 
 import org.redisson.Redisson
 

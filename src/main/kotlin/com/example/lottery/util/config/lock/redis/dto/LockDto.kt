@@ -1,4 +1,4 @@
-package com.example.lottery.util.lock.redis.dto
+package com.example.lottery.util.config.lock.redis.dto
 
 data class LockDto (
     val key: String,

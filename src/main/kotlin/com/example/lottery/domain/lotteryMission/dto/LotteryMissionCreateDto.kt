@@ -1,6 +1,6 @@
-package com.example.lottery.domain.lottery.dto
+package com.example.lottery.domain.lotteryMission.dto
 
-import com.example.lottery.domain.lottery.entity.LotteryMission
+import com.example.lottery.domain.lotteryMission.entity.LotteryMission
 
 data class LotteryMissionCreateDto (
     val type: LotteryMission.MissionType,
