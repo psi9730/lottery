@@ -58,7 +58,7 @@ class LotteryMissionRecord private constructor(
         private val expirationTime = Duration.ofDays(1)
 
         fun createCompleteWaitingMissionRecord(user: User, mission: LotteryMission, startAt: String): LotteryMissionRecord {
-            if (!mission.type.isCompleteWaitingRequired()) {
+            if (!mission.type.isCompleteWaitingRequired) {
                 throw BusinessValidationException("${mission.type} is not allowed")
             }
 
@@ -75,7 +75,7 @@ class LotteryMissionRecord private constructor(
         }
 
         fun createCompletedMissionRecord(user: User, mission: LotteryMission): LotteryMissionRecord {
-            if (mission.type.isCompleteWaitingRequired()) {
+            if (mission.type.isCompleteWaitingRequired) {
                 throw BusinessValidationException("${mission.type} can't complete directly")
             }
 

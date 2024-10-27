@@ -84,7 +84,7 @@ class LotteryMissionService(
 
     private fun completeMissionWithReward(user: User, mission: LotteryMission): Long {
         val missionRecord =
-            if (mission.type.isCompleteWaitingRequired()) {
+            if (mission.type.isCompleteWaitingRequired) {
                 updateWaitingMissionToCompleted(user, mission)
             } else {
                 LotteryMissionRecord.createCompletedMissionRecord(

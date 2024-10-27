@@ -25,7 +25,7 @@ class LotteryMission (
         ATTENDANCE,
         VISIT_COUPANG,
         WATCH_AD;
-        fun isCompleteWaitingRequired(): Boolean {
+        val isCompleteWaitingRequired: Boolean get() {
             return this == KAKAO_SHARE || this == WATCH_AD
         }
     }
