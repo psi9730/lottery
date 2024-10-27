@@ -1,6 +1,6 @@
-package com.example.lottery.util.lock.redis
+package com.example.lottery.util.config.lock.redis
 
-import com.example.lottery.util.lock.redis.dto.LockDto
+import com.example.lottery.util.config.lock.redis.dto.LockDto
 import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit

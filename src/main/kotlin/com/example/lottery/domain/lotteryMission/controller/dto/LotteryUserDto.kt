@@ -1,6 +1,6 @@
-package com.example.lottery.domain.lottery.controller.dto
+package com.example.lottery.domain.lotteryMission.controller.dto
 
-import com.example.lottery.domain.lottery.dto.LotteryUser
+import com.example.lottery.domain.lotteryMission.dto.LotteryUser
 
 data class LotteryUserDto(
     val uid: String,

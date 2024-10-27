@@ -1,4 +1,4 @@
-package com.example.lottery.domain.lottery.dto
+package com.example.lottery.domain.lotteryMission.dto
 
 data class LotteryUser(
     val uid: String,

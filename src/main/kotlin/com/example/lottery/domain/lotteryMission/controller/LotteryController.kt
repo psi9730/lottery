@@ -1,9 +1,9 @@
-package com.example.lottery.domain.lottery.controller
+package com.example.lottery.domain.lotteryMission.controller
 
-import com.example.lottery.domain.lottery.controller.dto.CompleteLotteryMissionResponseDto
-import com.example.lottery.domain.lottery.controller.dto.LotteryMissionDto
-import com.example.lottery.domain.lottery.controller.dto.LotteryUserDto
-import com.example.lottery.domain.lottery.service.LotteryMissionService
+import com.example.lottery.domain.lotteryMission.controller.dto.CompleteLotteryMissionResponseDto
+import com.example.lottery.domain.lotteryMission.controller.dto.LotteryMissionDto
+import com.example.lottery.domain.lotteryMission.controller.dto.LotteryUserDto
+import com.example.lottery.domain.lotteryMission.service.LotteryMissionService
 import org.springframework.web.bind.annotation.*
 
 @RestController

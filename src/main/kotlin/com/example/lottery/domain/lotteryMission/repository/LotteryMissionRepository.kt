@@ -1,6 +1,6 @@
-package com.example.lottery.domain.lottery.repository
+package com.example.lottery.domain.lotteryMission.repository
 
-import com.example.lottery.domain.lottery.entity.LotteryMission
+import com.example.lottery.domain.lotteryMission.entity.LotteryMission
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

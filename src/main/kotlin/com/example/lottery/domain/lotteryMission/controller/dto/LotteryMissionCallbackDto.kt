@@ -1,4 +1,4 @@
-package com.example.lottery.domain.lottery.controller.dto
+package com.example.lottery.domain.lotteryMission.controller.dto
 
 data class LotteryMissionCallbackDto (
     val uid: String,

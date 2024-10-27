@@ -1,7 +1,7 @@
-package com.example.lottery.domain.lottery.controller.dto
+package com.example.lottery.domain.lotteryMission.controller.dto
 
-import com.example.lottery.domain.lottery.dto.LotteryMissionWithRemainingDailyCount
-import com.example.lottery.domain.lottery.entity.LotteryMission
+import com.example.lottery.domain.lotteryMission.dto.LotteryMissionWithRemainingDailyCount
+import com.example.lottery.domain.lotteryMission.entity.LotteryMission
 
 data class LotteryMissionDto (
     val id: Long,

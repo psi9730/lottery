@@ -1,4 +1,4 @@
-package com.example.lottery.domain.lottery.entity
+package com.example.lottery.domain.lotteryMission.entity
 
 import com.example.lottery.domain.user.entity.User
 import com.example.lottery.util.error.BusinessValidationException
@@ -9,7 +9,7 @@ import java.time.Instant
 
 @Entity
 @Table(name = "lottery_mission_records")
-class LotteryMissionRecord (
+class LotteryMissionRecord private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
