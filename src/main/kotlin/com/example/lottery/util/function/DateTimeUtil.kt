@@ -4,6 +4,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 
 
 data class StartAndEnd(
@@ -14,9 +15,22 @@ data class StartAndEnd(
 class DateTimeUtil {
     companion object {
         private const val timezone = "Asia/Seoul"
+        val zoneId: ZoneId = ZoneId.of(timezone)
+
+        fun convertInstantToLocalDateTime (instant: Instant): LocalDateTime =
+            LocalDateTime.ofInstant(instant, zoneId)
+
+
+        fun convertStringToInstant(dateString: String): Instant {
+            val localDate = LocalDate.parse(dateString)
+
+            val zonedDateTime = localDate.atStartOfDay(zoneId)
+
+            return zonedDateTime.toInstant()
+        }
+
 
         fun getTodayStartAndEndAt(): StartAndEnd {
-            val zoneId = ZoneId.of(timezone)
             val today: LocalDate = LocalDate.now()
 
             val startOfToday: ZonedDateTime = today.atStartOfDay(zoneId)
@@ -26,6 +40,13 @@ class DateTimeUtil {
             val endInstant: Instant = endOfToday.toInstant()
 
             return StartAndEnd(startInstant, endInstant)
+        }
+
+        fun getStartAndEndOfWeek(): Pair<Instant, Instant> {
+            val today = LocalDate.now()
+            val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay(ZoneId.systemDefault()).toInstant()
+            val endOfWeek = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay(ZoneId.systemDefault()).toInstant()
+            return Pair(startOfWeek, endOfWeek)
         }
 
         fun isOver24HoursFromUtcString(startAt: String): Boolean {

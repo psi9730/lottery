@@ -1,14 +1,10 @@
-package com.example.lottery.domain.lotteryMission.entity
+package com.example.lottery.domain.point.entity
 
 import com.example.lottery.domain.user.entity.User
 import com.example.lottery.util.error.BusinessValidationException
 import jakarta.persistence.*
-import java.time.Instant
-import kotlin.random.Random
 
-@Entity
-@Table(name = "lottery_mission_coins")
-class LotteryMissionCoin private constructor (
+class Point private constructor (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -17,38 +13,41 @@ class LotteryMissionCoin private constructor (
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val amountType: AmountType,
 
     @Column(nullable = false)
     val amount: Long,
+) {
+    fun copy(
+        id: Long = this.id,
+        user: User = this.user,
+        amountType: AmountType = this.amountType,
+        amount: Long = this.amount
+    ): Point {
+        return Point(id, user, amountType, amount)
+    }
 
-    @Column(nullable = false)
-    val createdAt: Instant = Instant.now()
-    ) {
     enum class AmountType {
         PLUS,
         MINUS,
     }
 
     companion object {
-        fun plusCoinWithRandom(user: User, maxAmount: Long, minAmount: Long = 1): LotteryMissionCoin {
-            val randomAmount = Random.nextLong(minAmount, maxAmount + 1)
-
-            return LotteryMissionCoin(
+        fun reward(user: User, amount: Long): Point {
+            return Point(
                 amountType = AmountType.PLUS,
                 user = user,
-                amount = randomAmount,
+                amount = amount,
             )
         }
 
-        fun consumeCoin(user: User, totalAmount: Long, amount: Long): LotteryMissionCoin {
+        fun consume(user: User, totalAmount: Long, amount: Long): Point {
             if (totalAmount < amount) {
-                throw BusinessValidationException("${amount}를 사용하기엔 코인이 부족합니다.")
+                throw BusinessValidationException("${amount}를 사용하기엔 적립금이 부족합니다.")
             }
 
-            return LotteryMissionCoin(
+            return Point(
                 amountType = AmountType.MINUS,
                 user = user,
                 amount = amount,

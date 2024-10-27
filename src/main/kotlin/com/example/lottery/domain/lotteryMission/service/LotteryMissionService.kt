@@ -9,11 +9,14 @@ import com.example.lottery.domain.lotteryMission.repository.LotteryMissionRecord
 import com.example.lottery.domain.lotteryMission.repository.LotteryMissionRepository
 import com.example.lottery.domain.user.entity.User
 import com.example.lottery.domain.user.service.UserService
-import com.example.lottery.util.error.ResourceNotFoundException
-import com.example.lottery.util.function.DateTimeUtil
 import com.example.lottery.util.config.lock.redis.RedissonLockService
 import com.example.lottery.util.config.lock.redis.dto.LockDto
+import com.example.lottery.util.error.BusinessValidationException
+import com.example.lottery.util.error.ResourceNotFoundException
+import com.example.lottery.util.function.DateTimeUtil
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
@@ -38,11 +41,14 @@ class LotteryMissionService(
         )
     }
 
+    private fun getTotalCoinOfUser(user: User): Long {
+        return lotteryMissionCoinRepository.sumUserCoins(user.id) ?: 0
+    }
+
     @Transactional(readOnly = true)
     fun getLotteryUser(uid: String): LotteryUser {
         val user = userService.findUserOrThrow(uid)
-
-        return LotteryUser(uid, lotteryMissionCoinRepository.sumUserCoins(user.id) ?: 0)
+        return LotteryUser(uid, getTotalCoinOfUser(user))
     }
 
     private fun findTodayCompletedRecords(uid: String): List<LotteryMissionRecord> {
@@ -109,13 +115,13 @@ class LotteryMissionService(
 
             val user = userService.findUserOrThrow(uid)
 
-            val lockKey = "lottery-mission-lock:${mission.id}:$uid"
-            val lockParams = LockDto(
-                key = lockKey,
-            )
             var result = CompleteLotteryMissionDto(isSuccess = false, rewardedAmount = 0)
 
-            redissonLockService.executeWithLock(lockParams) {
+            redissonLockService.executeWithLock(
+                LockDto(
+                    key = "lottery-mission-lock:${mission.id}:$uid",
+                )
+            ) {
                 transactionTemplate.execute { status ->
                     try {
                         val today = DateTimeUtil.getTodayStartAndEndAt()
@@ -150,6 +156,11 @@ class LotteryMissionService(
         }
     }
 
+    @Retryable(
+        value = [BusinessValidationException::class, ResourceNotFoundException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delay = 500L)
+    )
     @Transactional
     fun createCompleteWaitingLotteryMissionRecord(dto: CreateCompleteWaitingLotteryMissionDto) {
         val mission = lotteryMissionRepository.findByIdOrNull(dto.missionId)
@@ -163,6 +174,16 @@ class LotteryMissionService(
                 mission,
                 startAt = dto.startAt
             )
+        )
+    }
+
+    @Transactional
+    fun consumeCoin (uid: String, amount: Long) {
+        val user = userService.findUserOrThrow(uid)
+        val totalCoin = getTotalCoinOfUser(user)
+
+        lotteryMissionCoinRepository.save(
+            LotteryMissionCoin.consumeCoin(user, totalCoin, amount)
         )
     }
 }

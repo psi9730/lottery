@@ -22,6 +22,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("mysql:mysql-connector-java:8.0.33")
 	implementation("org.redisson:redisson-spring-boot-starter:3.29.0")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("net.javacrumbs.shedlock:shedlock-spring:5.8.0")
+	implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.8.0")
+	implementation("org.springframework.retry:spring-retry")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
