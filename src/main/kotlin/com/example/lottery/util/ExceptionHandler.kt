@@ -1,9 +1,6 @@
 package com.example.lottery.util
 
-import com.example.lottery.util.error.UserAlreadyExistsException
-import com.example.lottery.util.error.UserNotFoundException
-import com.example.lottery.util.error.BusinessValidationException
-import com.example.lottery.util.error.ResourceNotFoundException
+import com.example.lottery.util.error.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -62,7 +59,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException::class)
-    fun handleUserNotFoundException(ex: ResourceNotFoundException): ResponseEntity<ErrorResponse> {
+    fun handleResourceNotFoundException(ex: ResourceNotFoundException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             status = HttpStatus.NOT_FOUND.value(),
             message = "Resource Not Found: ${ex.message}"

@@ -54,3 +54,5 @@ rapportlabs-kubernetes/
 .chartmuseum/
 
 src/main/resources/config/
+
+dump.rdb

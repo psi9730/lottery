@@ -1,29 +1,35 @@
 package com.example.lottery.domain.lottery.controller
 
-import com.example.lottery.domain.lottery.dto.CompleteLotteryMissionRequestDto
-import com.example.lottery.domain.lottery.dto.CompleteLotteryMissionResponseDto
-import com.example.lottery.domain.lottery.dto.LotteryMissionDto
-import com.example.lottery.domain.lottery.dto.LotteryUserDto
-import com.example.lottery.domain.lottery.service.LotteryMissionService
+import com.example.lottery.domain.lottery.controller.dto.DrawLotteryNumberResponse
+import com.example.lottery.domain.lottery.controller.dto.UserLotteryDrawsResponse
+import com.example.lottery.domain.lottery.service.LotteryService
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/lotteries")
 class LotteryController(
-    private val lotteryMissionService: LotteryMissionService
+    private val lotteryService: LotteryService
 ) {
-    @GetMapping("/users/me")
-    fun getLotteryUser(@RequestHeader("uid") uid: String): LotteryUserDto {
-        return lotteryMissionService.getLotteryUser(uid)
+    @GetMapping("/current/users/me/draws")
+    fun getCurrentLotteryDraws(@RequestHeader("uid") uid: String): UserLotteryDrawsResponse {
+        return UserLotteryDrawsResponse.of(lotteryService.getCurrentLotteryDraws(uid))
     }
 
-    @GetMapping("/missions")
-    fun getLotteryMissions(@RequestHeader("uid") uid: String): List<LotteryMissionDto> {
-        return lotteryMissionService.getLotteryMissionOfUser(uid)
+    @PostMapping("/current/users/me/draws")
+    fun drawRandomLotteryNumbers(@RequestHeader("uid") uid: String): DrawLotteryNumberResponse {
+        return DrawLotteryNumberResponse.of(lotteryService.drawRandomLotteryNumbers(uid))
     }
 
-    @PostMapping("/missions/{missionId}/complete")
-    fun completeLotteryMission(@PathVariable("missionId") missionId: Long, @RequestHeader("uid") uid: String): CompleteLotteryMissionResponseDto {
-        return lotteryMissionService.completeLotteryMission(CompleteLotteryMissionRequestDto(missionId, uid))
+    @GetMapping("/{lotteryRound}/users/me/draws")
+    fun getLotteryDraws(@RequestHeader("uid") uid: String, @PathVariable("lotteryRound") lotteryRound: Int): UserLotteryDrawsResponse {
+        return UserLotteryDrawsResponse.of(lotteryService.getLotteryDraws(uid, lotteryRound))
+    }
+
+    @PostMapping("/{lotteryRound}/users/me/draws/confirm")
+    fun confirmLotteryDraws(@RequestHeader("uid") uid: String, @PathVariable("lotteryRound") lotteryRound: String) {}
+
+    @PostMapping("/{lotteryRound}/users/me/draws/{drawId}/reward")
+    fun rewardLotteryDraw(@RequestHeader("uid") uid: String, @PathVariable("lotteryRound") lotteryRound: Int, @PathVariable("drawId") drawId: Long) {
+        return lotteryService.rewardLotteryDraw(uid, lotteryRound, drawId)
     }
 }
